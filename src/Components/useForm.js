@@ -11,54 +11,47 @@ export function useForm(initialValues) {
 			...values,
 			[name]: value,
 		});
-		if (validateOnChange) runValidateOnChange(e.target);
+		if (validateOnChange) validate({ [name]: value });
 	};
 
 	const handleSubmit = e => {
-		if (validateOnSubmit()) {
+		if (validate()) {
 		} else {
 		}
 		e.preventDefault();
 	};
-	const handleClick = () => {
+	const handleResetClick = () => {
 		setValues(initialValues);
 		setErrorTxt({});
 	};
 
-	const validateOnSubmit = () => {
+	const validate = (fieldValues = values) => {
 		let errorMsg = {};
-		errorMsg.fullName = values.fullName ? '' : 'This field is required.';
-		errorMsg.email = /$^|.*@.*..*/.test(values.email)
-			? ''
-			: 'Enter valid email';
-		errorMsg.mobile =
-			values.mobile.length > 9 ? '' : 'Minimum 10 digits required.';
-		errorMsg.departmentId =
-			parseInt(values.departmentId, 10) > 0 ? '' : 'Select a department';
-		setErrorTxt({
-			...errorMsg,
-		});
-		return Object.values(errorMsg).every(x => x === '');
-	};
-
-	const runValidateOnChange = ({ name, value }) => {
-		let errorMsg = {};
-		if (name === 'fullName')
-			errorMsg.fullName = value ? '' : 'This field is required.';
-		else if (name === 'email')
-			errorMsg.email = /$^|.*@.*.*/.test(value)
+		if ('fullName' in fieldValues)
+			errorMsg.fullName = fieldValues.fullName
+				? ''
+				: 'This field is required.';
+		if ('email' in fieldValues)
+			errorMsg.email = /$^|.*@.*..*/.test(fieldValues.email)
 				? ''
 				: 'Enter valid email';
-		else if (name === 'mobile')
+		if ('mobile' in fieldValues)
 			errorMsg.mobile =
-				value.length > 9 ? '' : 'Minimum 10 digits required.';
-		else
+				fieldValues.mobile.length > 9
+					? ''
+					: 'Minimum 10 digits required.';
+		if ('departmentId' in fieldValues)
 			errorMsg.departmentId =
-				parseInt(value, 10) > 0 ? '' : 'Select a department';
+				parseInt(fieldValues.departmentId, 10) > 0
+					? ''
+					: 'Select a department';
 		setErrorTxt({
 			...errorTxt,
 			...errorMsg,
 		});
+		if (fieldValues === values)
+			//which means we are calling validate() from handleSubmit()
+			return Object.values(errorMsg).every(x => x === '');
 	};
 
 	return {
@@ -68,7 +61,7 @@ export function useForm(initialValues) {
 		setErrorTxt,
 		errorTxt,
 		handleSubmit,
-		handleClick,
+		handleResetClick,
 	};
 }
 

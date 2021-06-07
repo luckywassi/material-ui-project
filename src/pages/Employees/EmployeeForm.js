@@ -18,7 +18,7 @@ const initialValues = {
 const validateOnChange = true;
 
 export default function EmployeeForm() {
-	const { values, handleChange, errorTxt, handleSubmit, handleClick } =
+	const { values, handleChange, errorTxt, handleSubmit, handleResetClick } =
 		useForm(initialValues);
 
 	return (
@@ -92,7 +92,7 @@ export default function EmployeeForm() {
 						<Controls.MyButton
 							text='Reset'
 							color='default'
-							onClick={handleClick}
+							onClick={handleResetClick}
 						/>
 					</div>
 				</Grid>
