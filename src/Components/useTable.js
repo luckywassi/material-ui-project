@@ -5,6 +5,7 @@ import {
 	TableHead,
 	TablePagination,
 	TableRow,
+	TableSortLabel,
 } from '@material-ui/core';
 
 import React, { useState } from 'react';
@@ -31,19 +32,41 @@ const useStyles = makeStyles(theme => ({
 
 export default function useTable(records, headCells) {
 	const classes = useStyles();
-
+	//states for pagintion
 	const pages = [5, 10, 20];
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
 
+	//states for sorting
+	const [order, setOrder] = useState();
+	const [orderBy, setOrderBy] = useState();
+
+	////
 	const TblContainer = props => (
 		<Table className={classes.table}>{props.children}</Table>
 	);
+
+	const handleSortRequest = columnId => {
+		const isAsc = orderBy === columnId && order === 'asc';
+		setOrder(isAsc ? 'desc' : 'asc');
+		setOrderBy(columnId); //tells which column we are reffering to for sorting
+	};
+
 	const TblHead = props => (
 		<TableHead>
 			<TableRow>
-				{headCells.map(cell => (
-					<TableCell key={cell.id}>{cell.label}</TableCell>
+				{headCells.map(headCell => (
+					<TableCell key={headCell.id}>
+						<TableSortLabel
+							active={orderBy === headCell.id}
+							direction={orderBy === headCell.id ? order : 'asc'}
+							onClick={() => {
+								handleSortRequest(headCell.id);
+							}}
+						>
+							{headCell.label}
+						</TableSortLabel>
+					</TableCell>
 				))}
 			</TableRow>
 		</TableHead>
@@ -72,8 +95,31 @@ export default function useTable(records, headCells) {
 		/>
 	);
 
+	const mySort = records => {
+		//convertedRecords is an array of arrays.
+		const convertedRecords = records.map(eachRecord => [eachRecord]);
+		convertedRecords.sort((a, b) => comparator(a, b));
+		//sortedRecords is an array of objects and also it is sorted
+		const sortedRecords = convertedRecords.map(arrayItem => arrayItem[0]);
+		if (order === 'asc') return sortedRecords;
+		else return sortedRecords.reverse();
+	};
+	const comparator = (a, b) => {
+		const firstValue = a[0][orderBy];
+		const secondValue = b[0][orderBy];
+		if (firstValue > secondValue) return 1;
+		else if (firstValue < secondValue) return -1;
+		else return 0;
+	};
 	const recordsAfterPagingAndSorting = () => {
-		return records.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+		if (order) {
+			let sortedRecords = mySort(records);
+			return sortedRecords.slice(
+				page * rowsPerPage,
+				(page + 1) * rowsPerPage
+			);
+		} else
+			return records.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 	};
 
 	return {

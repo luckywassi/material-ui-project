@@ -5,11 +5,10 @@ const useStyles = makeStyles({
 	sideMenu: {
 		display: 'flex',
 		flexDirection: 'column',
-		position: 'absolute',
+		position: 'fixed',
 		left: '0px',
 		width: '150px',
 		height: '100%',
-		position: 'fixed',
 		backgroundColor: '#253053',
 	},
 });
