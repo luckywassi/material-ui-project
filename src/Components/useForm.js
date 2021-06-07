@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
+import * as employeeService from '../services/employeeService';
 
 export function useForm(initialValues) {
 	const [values, setValues] = useState(initialValues);
@@ -16,7 +17,8 @@ export function useForm(initialValues) {
 
 	const handleSubmit = e => {
 		if (validate()) {
-		} else {
+			employeeService.insertEmployee(values);
+			handleResetClick();
 		}
 		e.preventDefault();
 	};
