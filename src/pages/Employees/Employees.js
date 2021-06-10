@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import EmployeesForm from './EmployeeForm';
+// import EmployeesForm from './EmployeeForm';
 import PageHeader from '../../Components/PageHeader';
 import { PeopleOutlineOutlined, Search } from '@material-ui/icons';
 import {
@@ -33,7 +33,8 @@ const headCells = [
 ];
 export default function Employees() {
 	const classes = useStyles();
-	const [records, setRecords] = useState(employeeService.getAllEmployees());
+	// const [records, setRecords] = useState(employeeService.getAllEmployees());
+    const records = employeeService.getAllEmployees();
 	const [isDataLoaded, setIsDataLoaded] = useState();
 
 	useEffect(() => {
