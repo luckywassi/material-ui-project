@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EmployeesForm from './EmployeeForm';
 import PageHeader from '../../Components/PageHeader';
-import { PeopleOutlineOutlined } from '@material-ui/icons';
+import { PeopleOutlineOutlined, Search } from '@material-ui/icons';
 import {
+	FormControlLabel,
+	InputAdornment,
 	makeStyles,
 	Paper,
+	Switch,
 	TableBody,
 	TableCell,
 	TableRow,
+	Toolbar,
 } from '@material-ui/core';
 import useTable from '../../Components/useTable';
 import * as employeeService from '../../services/employeeService';
+import Controls from '../../Components/Controls/Controls';
+import * as loadService from '../../services/loadDataService';
 
 const useStyles = makeStyles(theme => ({
 	pageContent: {
@@ -20,20 +26,30 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const headCells = [
-	{ id: 'fullName', label: 'Employee Name' },
-	{ id: 'email', label: 'Email' },
-	{ id: 'mobile', label: 'Phone Number' },
-	{ id: 'departmentTitle', label: 'Department' },
+	{ id: 'fullName', label: 'Employee Name', disableSorting: false },
+	{ id: 'email', label: 'Email', disableSorting: true },
+	{ id: 'mobile', label: 'Phone Number', disableSorting: true },
+	{ id: 'departmentTitle', label: 'Department', disableSorting: false },
 ];
 export default function Employees() {
 	const classes = useStyles();
 	const [records, setRecords] = useState(employeeService.getAllEmployees());
+	const [isDataLoaded, setIsDataLoaded] = useState();
+
+	useEffect(() => {
+		if (records.length < 1) setIsDataLoaded(false);
+		else setIsDataLoaded(true);
+	}, [records]);
 
 	const {
 		TblContainer,
 		TblHead,
 		TblPagination,
 		recordsAfterPagingAndSorting,
+		handleChangeDense,
+		dense,
+		handleChangeSearch,
+		searchedString,
 	} = useTable(records, headCells);
 
 	return (
@@ -47,6 +63,32 @@ export default function Employees() {
 			/>
 			<Paper className={classes.pageContent}>
 				{/* <EmployeesForm /> */}
+				<Toolbar>
+					<Controls.Input
+						label='Search Employee'
+						value={searchedString}
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position='start'>
+									<Search />
+								</InputAdornment>
+							),
+						}}
+						onChange={handleChangeSearch}
+					/>
+					<div style={{ marginLeft: '20px' }}>
+						<Controls.MyButton
+							text={isDataLoaded ? 'Clear Data' : 'Load Data'}
+							color='default'
+							onClick={e =>
+								loadService.handleLoadClick(
+									isDataLoaded,
+									setIsDataLoaded
+								)
+							}
+						/>
+					</div>
+				</Toolbar>
 				<TblContainer>
 					<TblHead />
 					<TableBody>
@@ -61,6 +103,17 @@ export default function Employees() {
 					</TableBody>
 				</TblContainer>
 				<TblPagination />
+				<div>
+					<FormControlLabel
+						control={
+							<Switch
+								checked={dense}
+								onChange={handleChangeDense}
+							/>
+						}
+						label='Dense padding'
+					/>
+				</div>
 			</Paper>
 		</>
 	);

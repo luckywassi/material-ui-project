@@ -13,6 +13,7 @@ const useStyles = makeStyles(theme => ({
 export default function MyButton(props) {
 	const { text, onClick, color, ...other } = props;
 	const classes = useStyles();
+	//this is just to show that extra props sent will be stored in "other" object
 	console.log(other.type);
 	return (
 		<Button
