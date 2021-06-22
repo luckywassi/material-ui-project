@@ -1,1 +1,1 @@
-To check its deployed version visit: my-pagination https://mypagination.netlify.app/
+To check its deployed version visit:  https://mypagination.netlify.app/
